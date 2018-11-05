@@ -1,0 +1,16 @@
+{
+  "name": "ptclserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "mongoose": "^5.3.7",
+    "socket.io": "^2.1.1"
+  }
+}
