@@ -12,6 +12,7 @@ class Users{
 		try{
 			userModel.find({phone_number: user_to_insert.pstn}, function(req, users){
 				if (users.length==0){ //completely new user
+					console.log('completely new user');
 					var pin=Math.floor(1000 + Math.random() * 9000);
 					var user_row=new userModel({
 						phone_number: 					user_to_insert.pstn,
@@ -40,6 +41,7 @@ class Users{
 					}
 				}
 				else{ //check if new device or not
+					console.log('check if new device or not because not new user');
 					userModel.find({
 						phone_number: 		user_to_insert.pstn,
 						devices: [{
@@ -128,51 +130,58 @@ class Users{
 	addContacts(data, resolve){
 		var self=this;
 		var contacts=data.contacts;
-		console.log('contacts: ', contacts.length);
+		console.log('received contacts length: ', contacts.length);
+		console.log('received contacts: ', contacts);
 		userModel.find({_id: data.id, phone_number: data.pstn, 'devices.device_id': data.device_id }, function(req, users){
 			if (users.length>0){
-
-				//iteraring through contacts sent by client
-				for (var i=0; i<contacts.length; i++){
-					(function(){
-						var count_primary=i;
-						console.log(contacts[count_primary]);
-						contacts[count_primary]._id=parseInt(contacts[count_primary]._id, 10);
-
-						//iterating through current contacts phone numbers
-						for (var j=0; j<contacts[count_primary].phone_number.length; j++){
-							(function(){
-								console.log(contacts[count_primary].phone_number[count_sub]);
-								var count_sub=j;
-								userModel.find({phone_number: contacts[count_primary].phone_number[count_sub].phone_number.replace(/\s/g, '') }, function(err, contact){
-									if (contact.length>0){
-										console.log('ID: ', contact[0]._id);
-										contacts[count_primary].onlineId=contact[0]._id;
-										contacts[count_primary].phone_number[count_sub].onlineId=contact[0]._id;
-
-										console.log('Contact: ', contacts[count_primary]);
-									}
-
-									if (count_sub == (contacts[count_primary].phone_number.length-1)){
-										users[0].contacts.push(contacts[count_primary]);
-
-										if (count_primary==(contacts.length-1)){
-											users[0].save(function(err, updatedUser){
-												if (err){
-													console.log(err);
-												}
-												else{
-													console.log('saved');
-												}
-											});
-											resolve({status: true, contacts});
-										}
-									}
-								});
-							})();
+				// userModel.find({_id: data.id, contacts.name:  }, function(req, users){{
+					//iteraring through contacts sent by client
+					for (var i=0; i<contacts.length; i++){
+						if (contacts[i]==null){
+							continue;
 						}
-					})();
-			  }
+						
+						(function(){
+							var count_primary=i;
+
+							console.log('contact #'+count_primary+': ', contacts[count_primary]);
+							contacts[count_primary]._id=parseInt(contacts[count_primary]._id, 10);
+
+							//iterating through current contacts phone numbers
+							for (var j=0; j<contacts[count_primary].phone_number.length; j++){
+								(function(){
+									console.log(contacts[count_primary].phone_number[count_sub]);
+									var count_sub=j;
+									userModel.find({phone_number: contacts[count_primary].phone_number[count_sub].phone_number.replace(/\s/g, '') }, function(err, contact){
+										if (contact.length>0){
+											console.log('ID: ', contact[0]._id);
+											contacts[count_primary].onlineId=contact[0]._id;
+											contacts[count_primary].phone_number[count_sub].onlineId=contact[0]._id;
+
+											console.log('Contact: ', contacts[count_primary]);
+										}
+
+										if (count_sub == (contacts[count_primary].phone_number.length-1)){
+											users[0].contacts.push(contacts[count_primary]);
+
+											if (count_primary==(contacts.length-1)){
+												users[0].save(function(err, updatedUser){
+													if (err){
+														console.log(err);
+													}
+													else{
+														console.log('saved');
+													}
+												});
+												resolve({status: true, contacts});
+											}
+										}
+									});
+								})();
+							}
+						})();
+				  }
+				// }
 			}
 		});
 	}

@@ -40,6 +40,7 @@ io.on('connection', socket => {
 			new Promise(function(resolve, reject){
 	    		users.insert(user, socketId, resolve);
 	    	}).then(function(response){
+					console.log('emit offers');
 	    		socket.emit('offers', JSON.stringify({id: response.id, offers: ['agent', 'landline', 'mobile', 'sms', 'email']}));
 	    	});
 	    }
@@ -49,7 +50,7 @@ io.on('connection', socket => {
   	});
 
   	socket.on('selected_offer', function(user) {
-    	console.log('selected_offer received');
+    	console.log('selected_offer received');conversations
 
     	try{
 			new Promise(function(resolve, reject){
@@ -157,4 +158,8 @@ io.on('connection', socket => {
     	//const receiverSocketId = mobileSockets[receiver.id];
     	//socket.to(receiverSocketId).emit('incomingMessage', message);
   	});
+
+		socket.on('disconnect', function(){
+			//users.unsetSocket();
+		});
 });
