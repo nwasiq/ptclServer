@@ -4,11 +4,12 @@ class Messages{
 	insert(message, resolve){
 		console.log('insert message');
 
-		new_message=new messages_model({
+		let new_message=new messages_model(
 			message
-		});
+		);
 
-		new_message,save(function(err, result){
+		console.log("message to save new message: ", new_message);
+		new_message.save(function(err, result){
 			if (err){
 				console.log(err);
 				resolve({status: false});

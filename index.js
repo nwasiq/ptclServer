@@ -119,30 +119,43 @@ io.on('connection', socket => {
   	});
 
   	socket.on('new_conversation', function(conversation) {
-    	console.log('conversation received', user);
+		console.log('conversation received: ', conversation);
 
     	let socketId;
     	let userId;
-    	let conversationId;
+		let conversationId;
+			conversation.contactNumber = conversation.contactNumber.replace(/\s/g, '')
+		console.log("Beginning new convo!");
     	try{
 			new Promise(function(resolve, reject){
-	    		user.getUser(conversation.contact);
+				users.getUser(conversation.contactNumber, resolve);
 	    	}).then(function(response){
 	    		if (response.status){
 	    			socketId=response.socketId;
-	    			userId=response.UserId;
+	    			userId=response.userId;
 	    			new Promise(function(resolve, reject){
-	    				conversations.insert([ { user_id: response.userId, phone_number: conversation.contact.phone_number }, { user_id: conversation.user.id, phone_number: conversation.user.phone_number }]);
-	    			});
+	    				conversations.insert([ { user_id: response.userId, phone_number: response.number }, { user_id: conversation.id, phone_number: conversation.myNumber }], resolve);
+					}).then(function (response2) {
+						console.log("response2: ", response2)
+						conversationId = response2.conversationId;
+						new Promise(function (resolve, reject) {
+							messages.insert({ conversationId: response2.conversationId, type: 'text', sender: conversation.id, receiver: userId, content: conversation.msg }, resolve);
+						});
+					}).then(function (response3) {
+						console.log("MESSAGE EMITTED TO USER!")
+						socket.to(socketId).emit('newConversation', response3);
+					});
 	    		}
-	    	}).then(function(response){
-	    		conversationId=response.conversationId;
-	    		new Promise(function(resolve, reject){
-	    			messages.insert({conversationId: response.conversationId, type: 'text', sender: conversation.user.id, receiver: userId, content: conversation.message['content']});
-	    		});
-	    	}).then(function(response){
-	    		socket.to(socketId).emit('newConversation', response);
-	    	});;
+			})
+			// .then(function(response2){
+	    	// 	conversationId=response2.conversationId;
+	    	// 	new Promise(function(resolve, reject){
+	    	// 		messages.insert({conversationId: response2.conversationId, type: 'text', sender: conversation.id, receiver: userId, content: conversation.msg}, resolve);
+	    	// 	});
+	    	// }).then(function(response3){
+			// 	console.log("MESSAGE EMITTED TO USER!")
+	    	// 	socket.to(socketId).emit('newConversation', response3);
+	    	// });;
 	    }
 	    catch(err){
 	    	console.log(err);

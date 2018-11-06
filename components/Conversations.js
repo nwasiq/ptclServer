@@ -10,6 +10,7 @@ class Conversations{
 
 		try{
 			new_conversation.save(function(err, results){
+				console.log("Conversation ID when saving convo", results._id)
 				if (err){
 					resolve({status: false});
 				}

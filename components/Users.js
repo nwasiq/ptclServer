@@ -204,13 +204,17 @@ class Users{
 		console.log('update user');
 	}
 
-	getUser(user, resolve){
-		userModel.find({ phone_number: user.phone_number }, function(err, users){
+	getUser(number, resolve){
+		console.log("number being searched: ", number)
+		userModel.find({ phone_number: number }, function(err, users){
 			if (err){
 				resolve({status:false});
 			}
 			else{
-				resolve({status:true, socketId: users[0].socketId, userId: _id});
+				if(users.length == 0){
+					resolve({ status: false });
+				}
+				resolve({ status: true, socketId: users[0].socket_id, userId: users[0]._id, number: users[0].phone_number});
 			}
 		});
 	}
