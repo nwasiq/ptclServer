@@ -135,7 +135,7 @@ class Users{
 				for (var j = 0; j < contact[0].contacts[contactsIter].phone_number.length; j++){
 					(function () {
 						var phoneNumberIter = j;
-						if (contact[0].contacts[contactsIter].phone_number[phoneNumberIter].phone_number == data.pstn) {
+						if (contact[0].contacts[contactsIter].phone_number[phoneNumberIter].phone_number.replace(/\s/g, '') == data.pstn) {
 							contact[0].contacts[contactsIter].phone_number[phoneNumberIter].onlineId = data.id;
 							contact[0].contacts[contactsIter].onlineId = data.id;
 							contact[0].save(function (err, updatedContact) {
@@ -183,7 +183,7 @@ class Users{
 											console.log('ID: ', contact[0]._id);
 											contacts[count_primary].onlineId=contact[0]._id;
 											contacts[count_primary].phone_number[count_sub].onlineId=contact[0]._id;
-											storeOnlineIdForContact(contact, data);
+											self.storeOnlineIdForContact(contact, data);
 											console.log('Contact: ', contacts[count_primary]);
 										}
 
