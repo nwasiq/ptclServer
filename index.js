@@ -145,7 +145,10 @@ io.on('connection', socket => {
 						console.log("MESSAGE EMITTED TO USER!")
 						socket.to(socketId).emit('newConversation', response3);
 					});
-	    		}
+				}
+				else{
+					console.log("No user found to send message to. Should send an sms")
+				}
 			})
 	    }
 	    catch(err){
