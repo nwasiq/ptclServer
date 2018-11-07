@@ -18,7 +18,7 @@ class Messages{
 				//message
 				//sender
 				//receiver
-				resolve({status: true,});
+				resolve({status: true, msgObject: result});
 			}
 		});
 	}

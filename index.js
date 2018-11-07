@@ -124,7 +124,7 @@ io.on('connection', socket => {
     	let socketId;
     	let userId;
 		let conversationId;
-			conversation.contactNumber = conversation.contactNumber.replace(/\s/g, '')
+		conversation.contactNumber = conversation.contactNumber.replace(/\s/g, '')
 		console.log("Beginning new convo!");
     	try{
 			new Promise(function(resolve, reject){
@@ -147,15 +147,6 @@ io.on('connection', socket => {
 					});
 	    		}
 			})
-			// .then(function(response2){
-	    	// 	conversationId=response2.conversationId;
-	    	// 	new Promise(function(resolve, reject){
-	    	// 		messages.insert({conversationId: response2.conversationId, type: 'text', sender: conversation.id, receiver: userId, content: conversation.msg}, resolve);
-	    	// 	});
-	    	// }).then(function(response3){
-			// 	console.log("MESSAGE EMITTED TO USER!")
-	    	// 	socket.to(socketId).emit('newConversation', response3);
-	    	// });;
 	    }
 	    catch(err){
 	    	console.log(err);
