@@ -18,6 +18,7 @@ class Messages{
 				//message
 				//sender
 				//receiver
+				console.log("Message inserted: ", result)
 				resolve({status: true, msgObject: result});
 			}
 		});

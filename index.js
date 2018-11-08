@@ -109,6 +109,12 @@ io.on('connection', socket => {
 	    		users.addContacts(data, resolve);
 	    	}).then(function(response){
 	    		if (response.status){
+					// console.log("Send messasge to these users that his friend has joined ptcl smartlink: ");
+					// console.log(response.updatedUsers);
+					// console.log("The friend who has joined basically: ", response.updatedUsers[0].friendName);
+					for(var i = 0; i < response.updatedUsers.length; i++){
+						socket.to(response.updatedUsers[i].socket_id).emit('friendNoti', response.updatedUsers[i].friendName);
+					}
 	    			socket.emit('contacts', response.contacts);
 	    		}
 	    	});
@@ -140,11 +146,12 @@ io.on('connection', socket => {
 						conversationId = response2.conversationId;
 						new Promise(function (resolve, reject) {
 							messages.insert({ conversationId: response2.conversationId, type: 'text', sender: conversation.id, receiver: userId, content: conversation.msg }, resolve);
-						});
-					}).then(function (response3) {
-						console.log("MESSAGE EMITTED TO USER!")
-						socket.to(socketId).emit('newConversation', response3);
-					});
+						}).then(function (response3) {
+							console.log("MESSAGE EMITTED TO USER!")
+							console.log(response3)
+							socket.to(socketId).emit('newConversation', response3);
+						})
+					})
 				}
 				else{
 					console.log("No user found to send message to. Should send an sms")

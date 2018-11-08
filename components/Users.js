@@ -127,7 +127,7 @@ class Users{
 		});
 	}
 
-	storeOnlineIdForContact(contact, data){
+	storeOnlineIdForContact(contact, data, updatedUsers){
 		for (var i = 0; i < contact[0].contacts.length; i++) {
 			(function () {
 				var contactsIter = i;
@@ -138,26 +138,23 @@ class Users{
 						if (contact[0].contacts[contactsIter].phone_number[phoneNumberIter].phone_number.replace(/\s/g, '') == data.pstn) {
 							contact[0].contacts[contactsIter].phone_number[phoneNumberIter].onlineId = data.id;
 							contact[0].contacts[contactsIter].onlineId = data.id;
-							contact[0].save(function (err, updatedContact) {
-								if (err) {
-									console.log(err);
-								}
-								else {
-									console.log('contact updated');
-								}
-							});
+							contact[0].save();
+							contact[0].friendName = contact[0].contacts[contactsIter].name;
+							updatedUsers.push(contact[0]);
+							// console.log("This user has your phone number, he'll be notified of your presence here", contact[0])
 						}
 					})();
 				}
 			})();
+
 		}
 	}
 
 	addContacts(data, resolve){
 		var self=this;
 		var contacts=data.contacts;
+		var updatedUsers = [];
 		console.log('received contacts length: ', contacts.length);
-		console.log('received contacts: ', contacts);
 		userModel.find({_id: data.id, phone_number: data.pstn, 'devices.device_id': data.device_id }, function(req, users){
 			if (users.length>0){
 				// userModel.find({_id: data.id, contacts.name:  }, function(req, users){{
@@ -170,21 +167,22 @@ class Users{
 						(function(){
 							var count_primary=i;
 
-							console.log('contact #'+count_primary+': ', contacts[count_primary]);
+							// console.log('contact #'+count_primary+': ', contacts[count_primary]);
 							contacts[count_primary]._id=parseInt(contacts[count_primary]._id, 10);
 
 							//iterating through current contacts phone numbers
 							for (var j=0; j<contacts[count_primary].phone_number.length; j++){
 								(function(){
 									var count_sub = j;
-									console.log(contacts[count_primary].phone_number[count_sub]);
+									// console.log(contacts[count_primary].phone_number[count_sub]);
 									userModel.find({phone_number: contacts[count_primary].phone_number[count_sub].phone_number.replace(/\s/g, '') }, function(err, contact){
+										var userToPush;
 										if (contact.length>0){
-											console.log('ID: ', contact[0]._id);
+											// console.log('ID: ', contact[0]._id);
 											contacts[count_primary].onlineId=contact[0]._id;
 											contacts[count_primary].phone_number[count_sub].onlineId=contact[0]._id;
-											self.storeOnlineIdForContact(contact, data);
-											console.log('Contact: ', contacts[count_primary]);
+											self.storeOnlineIdForContact(contact, data, updatedUsers)
+											// console.log('Contact: ', contacts[count_primary]);
 										}
 
 										if (count_sub == (contacts[count_primary].phone_number.length-1)){
@@ -199,7 +197,8 @@ class Users{
 														console.log('saved');
 													}
 												});
-												resolve({status: true, contacts});
+												// console.log("users updated: ", updatedUsers);
+												resolve({status: true, contacts, updatedUsers});
 											}
 										}
 									});
