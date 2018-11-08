@@ -187,7 +187,17 @@ io.on('connection', socket => {
 				}).then(function(message){
 					if(message.status){
 						console.log("message saved to db: ", receiverID);
-						socket.to(receiverID).emit("newMessage", message.msgObject)
+						new Promise(function(resolve, reject){
+							users.getUserSocket(receiverID, resolve);
+						}).then(function(socket){
+							if(socket.status){
+								socket.to(socket.socketId).emit("newMessage", message.msgObject)
+							}
+							else{
+								console.log("An error occured, failed to retrieve receiver socket");
+							}
+						})
+						
 					}
 					else{
 						console.log("An error occured");

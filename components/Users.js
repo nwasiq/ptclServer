@@ -244,6 +244,20 @@ class Users{
 		});
 	}
 
+	getUserSocket(id, resolve) {
+		userModel.findOne({ _id: id }, function (err, user) {
+			if (err) {
+				resolve({ status: false });
+			}
+			else {
+				if (!user) {
+					resolve({ status: false });
+				}
+				resolve({ status: true, socketId: user.socket_id});
+			}
+		});
+	}
+
 	delete(user){
 		console.log('delete user');
 	}
