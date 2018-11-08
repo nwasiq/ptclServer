@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 let MessagesSchema = new Schema({
 	conversation_id: 		String,
 	type: 					{type: String, required: true},
-    sender: 	 			{type: String, required: true, unique: true, max: 100},
+    sender: 	 			{type: String, required: true, max: 100},
     receiver: 				{type: String, max: 250},
     content: 				{type: String},
     delivered: 				{type: Boolean, required: true, default: false },

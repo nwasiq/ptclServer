@@ -169,13 +169,13 @@ io.on('connection', socket => {
   	socket.on('message', function(msgObject) {
     	console.log('message received: ', msgObject);
 
+		var receiverID;
 		var conversationID = msgObject.text.conversation_id;
 		var senderID = msgObject.text.sender_id;
 		new Promise(function(resolve, reject) {
 			conversations.retreive(conversationID, resolve, reject);
 		}).then(function(conversation){
 			if(conversation){
-				var receiverID;
 				if (conversation.participants.known[0].user_id == senderID){
 					receiverID = conversation.participants.known[1].user_id;
 				}
@@ -186,7 +186,7 @@ io.on('connection', socket => {
 					messages.insert({ conversation_id: conversationID, type: msgObject.text.type, sender: senderID, receiver: receiverID, content: msgObject.text.content }, resolve);
 				}).then(function(message){
 					if(message.status){
-						console.log("message saved to db");
+						console.log("message saved to db: ", receiverID);
 						socket.to(receiverID).emit("newMessage", message.msgObject)
 					}
 					else{
