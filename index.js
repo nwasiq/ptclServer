@@ -145,12 +145,13 @@ io.on('connection', socket => {
 						console.log("response2: ", response2)
 						conversationId = response2.conversationId;
 						new Promise(function (resolve, reject) {
-							messages.insert({ conversationId: response2.conversationId, type: 'text', sender: conversation.id, receiver: userId, content: conversation.msg }, resolve);
+							messages.insert({ conversation_id: response2.conversationId, type: 'text', sender: conversation.id, receiver: userId, content: conversation.msg }, resolve);
 						}).then(function (response3) {
 							console.log("MESSAGE EMITTED TO USER!")
 							console.log(response3)
+							console.log('Conversation ID: ', response3.conversation_id);
 							socket.to(socketId).emit('newConversation', response3);
-							socket.emit('conversation_id', response3.conversation_id);
+							socket.emit('conversation_id', response3.msgObject.conversation_id);
 						})
 					})
 				}
@@ -168,8 +169,8 @@ io.on('connection', socket => {
   	socket.on('message', function(msgObject) {
     	console.log('message received: ', msgObject);
 
-		var conversationID = msgObject.conversation_id;
-		var senderID = msgObject.sender_id;
+		var conversationID = msgObject.text.conversation_id;
+		var senderID = msgObject.text.sender_id;
 		new Promise(function(resolve, reject) {
 			conversations.retreive(conversationID, resolve, reject);
 		}).then(function(conversation){
@@ -182,7 +183,7 @@ io.on('connection', socket => {
 					receiverID = conversation.participants.known[0].user_id;
 				}
 				new Promise(function(resolve, reject){
-					messages.insert({ conversationId: conversationID, type: msgObject.type, sender: senderID, receiver: receiverID, content: msgObject.content }, resolve);
+					messages.insert({ conversation_id: conversationID, type: msgObject.text.type, sender: senderID, receiver: receiverID, content: msgObject.text.content }, resolve);
 				}).then(function(message){
 					if(message.status){
 						console.log("message saved to db");

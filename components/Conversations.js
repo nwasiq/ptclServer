@@ -25,9 +25,11 @@ class Conversations{
 	}
 
 	retreive(conversationID, resolve, reject){
+		console.log('Conversation To Retreive ID: ', conversationID);
 		conversation_model.findOne({_id: conversationID}, (err, conversation) => {
 
 			if(err) reject(err);
+			console.log('Retreived Conversation', conversation);
 
 			resolve(conversation);
 
