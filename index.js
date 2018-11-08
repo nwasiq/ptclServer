@@ -150,6 +150,7 @@ io.on('connection', socket => {
 							console.log("MESSAGE EMITTED TO USER!")
 							console.log(response3)
 							socket.to(socketId).emit('newConversation', response3);
+							socket.emit('conversation_id', response3.conversation_id);
 						})
 					})
 				}
@@ -163,12 +164,41 @@ io.on('connection', socket => {
 	    }
   	});
 
-  	socket.on('message', function(text) {
-    	console.log('message received');
+	  // msg object contains type, content and conversation_id, sender_id (auth token / online ID)
+  	socket.on('message', function(msgObject) {
+    	console.log('message received: ', msgObject);
 
-    	socketId='m-UJ2r4sV8lxYVAkAAAB';
+		var conversationID = msgObject.conversation_id;
+		var senderID = msgObject.sender_id;
+		new Promise(function(resolve, reject) {
+			conversations.retreive(conversationID, resolve, reject);
+		}).then(function(conversation){
+			if(conversation){
+				var receiverID;
+				if (conversation.participants.known[0].user_id == senderID){
+					receiverID = conversation.participants.known[1].user_id;
+				}
+				else{
+					receiverID = conversation.participants.known[0].user_id;
+				}
+				new Promise(function(resolve, reject){
+					messages.insert({ conversationId: conversationID, type: msgObject.type, sender: senderID, receiver: receiverID, content: msgObject.content }, resolve);
+				}).then(function(message){
+					if(message.status){
+						console.log("message saved to db");
+						socket.to(receiverID).emit("newMessage", message.msgObject)
+					}
+					else{
+						console.log("An error occured");
+					}
+				})
+			}
+		}, function(err){
+			console.log("conversation did not retrieve. err occured", err)
+		})
+    	// socketId='m-UJ2r4sV8lxYVAkAAAB';
 
-    	socket.to(connected_users[1]).emit('incomingMessage', text+socket.id);
+    	// socket.to(connected_users[1]).emit('incomingMessage', text+socket.id);
     	//const receiverSocketId = mobileSockets[receiver.id];
     	//socket.to(receiverSocketId).emit('incomingMessage', message);
   	});

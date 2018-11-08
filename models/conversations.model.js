@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 let ConversationSchema = new Schema({
     name: 				{type: String, max: 250},
-    participants: 		[{
+    participants: 		{
     	known: 				[{
     		user_id: 		String,
     		phone_number: 	String
@@ -11,7 +11,7 @@ let ConversationSchema = new Schema({
     	unknown: 		[{
     		phone_number: 	{type: String}
     	}]
-    }]
+    }
 });
 
 
