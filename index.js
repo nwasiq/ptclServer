@@ -141,15 +141,17 @@ io.on('connection', socket => {
 	    			userId=user.userId;
 	    			new Promise(function(resolve, reject){
 	    				conversations.insert([ { user_id: user.userId, phone_number: user.number }, { user_id: conversation.id, phone_number: conversation.myNumber }], resolve);
-					}).then(function (conversation) {
-						console.log("conversation: ", conversation)
-						conversationId = conversation.conversationId;
+					}).then(function (convo) {
+						console.log("response2: ", convo)
+						conversationId = convo.conversationId;
 						new Promise(function (resolve, reject) {
-							messages.insert({ conversation_id: conversation.conversationId, type: 'text', sender: conversation.id, receiver: userId, content: conversation.msg }, resolve);
+							messages.insert({ conversation_id: convo.conversationId, type: 'text', sender: conversation.id, receiver: userId, content: conversation.msg }, resolve);
 						}).then(function (messageObject) {
 							console.log("MESSAGE EMITTED TO USER!")
 							console.log(messageObject)
 							console.log('Conversation ID: ', messageObject.conversation_id);
+
+							messageObject.senderNumber = conversation.contactNumber
 							socket.to(socketId).emit('newConversation', messageObject);
 							socket.emit('conversation_id', messageObject.msgObject.conversation_id);
 						})
@@ -189,9 +191,9 @@ io.on('connection', socket => {
 						console.log("message saved to db: ", receiverID);
 						new Promise(function(resolve, reject){
 							users.getUserSocket(receiverID, resolve);
-						}).then(function(socket){
-							if(socket.status){
-								socket.to(socket.socketId).emit("newMessage", message.msgObject)
+						}).then(function(user){
+							if(user.status){
+								socket.to(user.socketId).emit("newMessage", message.msgObject)
 							}
 							else{
 								console.log("An error occured, failed to retrieve receiver socket");
