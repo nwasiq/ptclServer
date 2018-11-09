@@ -135,23 +135,23 @@ io.on('connection', socket => {
     	try{
 			new Promise(function(resolve, reject){
 				users.getUser(conversation.contactNumber, resolve);
-	    	}).then(function(response){
-	    		if (response.status){
-	    			socketId=response.socketId;
-	    			userId=response.userId;
+	    	}).then(function(user){
+	    		if (user.status){
+	    			socketId=user.socketId;
+	    			userId=user.userId;
 	    			new Promise(function(resolve, reject){
-	    				conversations.insert([ { user_id: response.userId, phone_number: response.number }, { user_id: conversation.id, phone_number: conversation.myNumber }], resolve);
-					}).then(function (response2) {
-						console.log("response2: ", response2)
-						conversationId = response2.conversationId;
+	    				conversations.insert([ { user_id: user.userId, phone_number: user.number }, { user_id: conversation.id, phone_number: conversation.myNumber }], resolve);
+					}).then(function (conversation) {
+						console.log("conversation: ", conversation)
+						conversationId = conversation.conversationId;
 						new Promise(function (resolve, reject) {
-							messages.insert({ conversation_id: response2.conversationId, type: 'text', sender: conversation.id, receiver: userId, content: conversation.msg }, resolve);
-						}).then(function (response3) {
+							messages.insert({ conversation_id: conversation.conversationId, type: 'text', sender: conversation.id, receiver: userId, content: conversation.msg }, resolve);
+						}).then(function (messageObject) {
 							console.log("MESSAGE EMITTED TO USER!")
-							console.log(response3)
-							console.log('Conversation ID: ', response3.conversation_id);
-							socket.to(socketId).emit('newConversation', response3);
-							socket.emit('conversation_id', response3.msgObject.conversation_id);
+							console.log(messageObject)
+							console.log('Conversation ID: ', messageObject.conversation_id);
+							socket.to(socketId).emit('newConversation', messageObject);
+							socket.emit('conversation_id', messageObject.msgObject.conversation_id);
 						})
 					})
 				}
