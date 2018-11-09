@@ -253,7 +253,7 @@ class Users{
 				if (!user) {
 					resolve({ status: false });
 				}
-				resolve({ status: true, socketId: user.socket_id});
+				resolve({ status: true, socketId: user.socket_id, phoneNumber: user.phone_number});
 			}
 		});
 	}

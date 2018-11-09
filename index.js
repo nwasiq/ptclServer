@@ -147,11 +147,12 @@ io.on('connection', socket => {
 						new Promise(function (resolve, reject) {
 							messages.insert({ conversation_id: convo.conversationId, type: 'text', sender: conversation.id, receiver: userId, content: conversation.msg }, resolve);
 						}).then(function (messageObject) {
-							console.log("MESSAGE EMITTED TO USER!")
-							console.log(messageObject)
-							console.log('Conversation ID: ', messageObject.conversation_id);
+							// console.log("MESSAGE EMITTED TO USER!")
+							// console.log(messageObject)
+							// console.log('Conversation ID: ', messageObject.conversation_id);
 
-							messageObject.senderNumber = conversation.contactNumber
+							messageObject.senderNumber = conversation.myNumber
+							console.log("sender Number: ",messageObject.senderNumber)
 							socket.to(socketId).emit('newConversation', messageObject);
 							socket.emit('conversation_id', messageObject.msgObject.conversation_id);
 						})
@@ -193,6 +194,7 @@ io.on('connection', socket => {
 							users.getUserSocket(receiverID, resolve);
 						}).then(function(user){
 							if(user.status){
+								message.msgObject.phoneNumber = user.phoneNumber 
 								socket.to(user.socketId).emit("newMessage", message.msgObject)
 							}
 							else{
