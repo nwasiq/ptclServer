@@ -17,16 +17,16 @@ class Users{
 					var user_row=new userModel({
 						phone_number: 					user_to_insert.pstn,
 						devices:[{
-							device_id: 						user_to_insert.device_id,
-							device_mac_address: 			user_to_insert.device_mac_address,
+							device_id: 							user_to_insert.device_id,
+							device_mac_address: 		user_to_insert.device_mac_address,
 							device_model: 					user_to_insert.device_model,
-					    	device_brand: 					user_to_insert.device_brand,
-					    	device_api_level: 				user_to_insert.device_api_level,
-					    	device_serial: 					user_to_insert.device_serial,
-					    	phone_number: 					user_to_insert.phone_number
-					    }],
-				    	pin: 							pin,
-				    	socket_id: 						socketId
+					    device_brand: 					user_to_insert.device_brand,
+					    device_api_level: 			user_to_insert.device_api_level,
+					    device_serial: 					user_to_insert.device_serial,
+					    phone_number: 					user_to_insert.phone_number
+					  }],
+				    pin: 										pin,
+				    socket_id: 							socketId
 					});
 
 					try{
@@ -131,7 +131,7 @@ class Users{
 		for (var i = 0; i < contact[0].contacts.length; i++) {
 			(function () {
 				var contactsIter = i;
-				// var contacts_to_send_counter = 
+				// var contacts_to_send_counter =
 				for (var j = 0; j < contact[0].contacts[contactsIter].phone_number.length; j++){
 					(function () {
 						var phoneNumberIter = j;
@@ -163,7 +163,7 @@ class Users{
 						if (contacts[i]==null){
 							continue;
 						}
-						
+
 						(function(){
 							var count_primary=i;
 
@@ -181,6 +181,7 @@ class Users{
 											// console.log('ID: ', contact[0]._id);
 											contacts[count_primary].onlineId=contact[0]._id;
 											contacts[count_primary].phone_number[count_sub].onlineId=contact[0]._id;
+											contacts[count_primary].phone_number[count_sub].phone_number=contacts[count_primary].phone_number[count_sub].phone_number.replace(/\s/g, '');
 											self.storeOnlineIdForContact(contact, data, updatedUsers)
 											// console.log('Contact: ', contacts[count_primary]);
 										}

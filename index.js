@@ -1,7 +1,7 @@
 const server = require('http').createServer().listen(3000);
 const fs = require('fs');
 const io = require('socket.io')(server, {
-	'pingInterval':10000,
+	'pingInterval':20000,
 	'pingTimeout':25000
 });
 
@@ -194,14 +194,13 @@ io.on('connection', socket => {
 							users.getUserSocket(receiverID, resolve);
 						}).then(function(user){
 							if(user.status){
-								message.msgObject.phoneNumber = user.phoneNumber 
-								socket.to(user.socketId).emit("newMessage", message.msgObject)
+								socket.to(user.socketId).emit("newMessage", {msgObject: message.msgObject, senderNumber: msgObject.text.sender_number})
 							}
 							else{
 								console.log("An error occured, failed to retrieve receiver socket");
 							}
 						})
-						
+
 					}
 					else{
 						console.log("An error occured");
