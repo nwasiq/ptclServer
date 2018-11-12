@@ -217,7 +217,31 @@ io.on('connection', socket => {
     	//socket.to(receiverSocketId).emit('incomingMessage', message);
   	});
 
-		socket.on('disconnect', function(){
-			//users.unsetSocket();
-		});
+	socket.on('disconnect', function () {
+		//users.unsetSocket();
+	});
+
+	function getRoomNumberForCalls() {
+		return Math.floor(100000 + Math.random() * 900000);
+	}
+
+	/**
+	 * TODO: callObject needs to include: receiverNumber, callerNumber
+	 */
+	socket.on('voiceCall', function(callObject){
+		console.log("Call object: ", callObject);
+		console.log("this number needs to be ringed: ", callObject.receiverNumber);
+		new Promise((resolve, reject) => {
+			users.getUser(callObject.receiverNumber, resolve)
+		}).then((user) => {
+			var callObj = {
+				callerNumber: callObject.callerNumber,
+				roomId: getRoomNumberForCalls()
+			}
+			console.log("This object is being emitted to incoming calls: ", callObj);
+			socket.to(user.socketId).emit('incomingCall', callObj);
+			// socket.emit('outgoingCallConnected', callObj.roomId);
+			// socket.emit('onCall', callObject.onCall);
+		})
+	})
 });
