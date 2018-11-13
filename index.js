@@ -228,7 +228,7 @@ io.on('connection', socket => {
 	/**
 	 * TODO: callObject needs to include: receiverNumber, callerNumber
 	 */
-	socket.on('voiceCall', function(callObject){
+	socket.on('call', function(callObject){
 		console.log("Call object: ", callObject);
 		console.log("this number needs to be ringed: ", callObject.receiverNumber);
 		new Promise((resolve, reject) => {
@@ -237,7 +237,8 @@ io.on('connection', socket => {
 		}).then((user) => {
 			var callObj = {
 				callerNumber: callObject.callerNumber,
-				roomId: getRoomNumberForCalls()
+				roomId: getRoomNumberForCalls(),
+				type: callObject.type
 			}
 			console.log("This object is being emitted to incoming calls: ", callObj);
 			socket.to(user.socketId).emit('incomingCall', callObj);
@@ -254,7 +255,10 @@ io.on('connection', socket => {
 		}).then((user) => {
 			socket.to(user.socketId).emit('outgoingCallConnected', callObject.roomId);
 		})
-
-		socket.emit('outgoingCallConnected', callObject.roomId);
+		var callObj = {
+			type: callObject.type,
+			roomId: callObject.roomId
+		}
+		socket.emit('outgoingCallConnected', callObj);
 	});
 });
