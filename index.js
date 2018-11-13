@@ -245,8 +245,16 @@ io.on('connection', socket => {
 		})
 	});
 
-	socket.on('callAccepted', function(roomId){
-		console.log('callAccepted: Room ID: ', roomId);
+	socket.on('callAccepted', function(callObject){
+		console.log('callAccepted: Room ID: ', callObject.roomId);
+		console.log('callAccepted: Number to accept call: ', callObject.callerNumber);
+
+		new Promise((resolve, reject) => {
+			users.getUser(callObject.callerNumber, resolve);
+		}).then((user) => {
+			socket.to(user.socketId).emit('outgoingCallConnected', callObject.roomId);
+		})
+
 		socket.emit('outgoingCallConnected', roomId);
 	});
 });
