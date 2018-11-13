@@ -255,6 +255,6 @@ io.on('connection', socket => {
 			socket.to(user.socketId).emit('outgoingCallConnected', callObject.roomId);
 		})
 
-		socket.emit('outgoingCallConnected', roomId);
+		socket.emit('outgoingCallConnected', callObject.roomId);
 	});
 });
